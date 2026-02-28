@@ -17,7 +17,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_bf690d06b3b5c6728d26c343f3f2b9b4 {
+                #map_a6251db2d2e4d270fce280f076743f62 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -162,11 +162,63 @@
         color: #999;
         font-size: 12px;
     }
+    #search-bar {
+        position: fixed;
+        top: 75px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+    #address-input {
+        width: 320px;
+        padding: 10px 14px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        outline: none;
+    }
+    #address-input:focus {
+        border-color: #999;
+    }
+    #search-btn, #clear-btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    #search-btn {
+        background: #333;
+        color: white;
+    }
+    #search-btn:hover {
+        background: #555;
+    }
+    #clear-btn {
+        background: #eee;
+        color: #333;
+    }
+    #clear-btn:hover {
+        background: #ddd;
+    }
 </style>
 
 <div id="title-bar">
     <h3>Jenny Yoo Wholesale Accounts</h3>
     <p>Territory coverage by collection &bull; Hover for details</p>
+</div>
+
+<div id="search-bar">
+    <input type="text" id="address-input" placeholder="Enter an address to spot check...">
+    <button id="search-btn" onclick="searchAddress()">Go</button>
+    <button id="clear-btn" onclick="clearSearch()" style="display:none">Clear</button>
 </div>
 
 <div id="filter-panel">
@@ -362,16 +414,87 @@ function renderStores() {
 function applyFilters() {
     renderStores();
 }
+
+// ── Address search ──
+var searchMarker = null;
+
+function searchAddress() {
+    var query = document.getElementById('address-input').value.trim();
+    if (!query) return;
+
+    var btn = document.getElementById('search-btn');
+    btn.textContent = '...';
+    btn.disabled = true;
+
+    // Use Nominatim (same geocoder as our data)
+    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(query);
+
+    fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            btn.textContent = 'Go';
+            btn.disabled = false;
+
+            if (data.length === 0) {
+                alert('Address not found. Try a more specific address.');
+                return;
+            }
+
+            var lat = parseFloat(data[0].lat);
+            var lon = parseFloat(data[0].lon);
+
+            clearSearch();
+
+            // Add a red marker for the searched location
+            searchMarker = L.marker([lat, lon], {
+                icon: L.divIcon({
+                    className: '',
+                    html: '<div style="width:14px;height:14px;background:#E53935;border:2.5px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>',
+                    iconSize: [14, 14],
+                    iconAnchor: [7, 7]
+                })
+            }).addTo(mapObj);
+
+            searchMarker.bindTooltip(
+                '<div style="font-family:Arial,sans-serif">' +
+                '<b style="color:#E53935">Spot Check</b><br>' +
+                '<span style="color:#555;font-size:11px">' + data[0].display_name + '</span></div>'
+            ).openTooltip();
+
+            mapObj.setView([lat, lon], 8);
+            document.getElementById('clear-btn').style.display = 'inline-block';
+        })
+        .catch(function() {
+            btn.textContent = 'Go';
+            btn.disabled = false;
+            alert('Geocoding failed. Try again.');
+        });
+}
+
+function clearSearch() {
+    if (searchMarker) {
+        mapObj.removeLayer(searchMarker);
+        searchMarker = null;
+    }
+    document.getElementById('clear-btn').style.display = 'none';
+}
+
+// Allow Enter key to search
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('address-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') searchAddress();
+    });
+});
 </script>
     
-            <div class="folium-map" id="map_bf690d06b3b5c6728d26c343f3f2b9b4" ></div>
+            <div class="folium-map" id="map_a6251db2d2e4d270fce280f076743f62" ></div>
         
 </body>
 <script>
     
     
-            var map_bf690d06b3b5c6728d26c343f3f2b9b4 = L.map(
-                "map_bf690d06b3b5c6728d26c343f3f2b9b4",
+            var map_a6251db2d2e4d270fce280f076743f62 = L.map(
+                "map_a6251db2d2e4d270fce280f076743f62",
                 {
                     center: [39.8283, -98.5795],
                     crs: L.CRS.EPSG3857,
@@ -388,7 +511,7 @@ function applyFilters() {
 
         
     
-            var tile_layer_325c5e44a32213d71ef98ea07d6df3fb = L.tileLayer(
+            var tile_layer_0638fe5187c5ed2cb54d3456a79ef510 = L.tileLayer(
                 "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
                 {
   "minZoom": 0,
@@ -405,7 +528,7 @@ function applyFilters() {
             );
         
     
-            tile_layer_325c5e44a32213d71ef98ea07d6df3fb.addTo(map_bf690d06b3b5c6728d26c343f3f2b9b4);
+            tile_layer_0638fe5187c5ed2cb54d3456a79ef510.addTo(map_a6251db2d2e4d270fce280f076743f62);
         
 </script>
 </html>
