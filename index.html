@@ -17,7 +17,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_a6251db2d2e4d270fce280f076743f62 {
+                #map_70959b1acc9d47b1ac58d8b4229c3900 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -415,60 +415,115 @@ function applyFilters() {
     renderStores();
 }
 
+// ── Address cleaning ──
+function cleanAddress(raw) {
+    var q = raw;
+    // Strip HTML tags (e.g. <br>)
+    q = q.replace(/<[^>]+>/g, ', ');
+    // Fix common encoding artifacts: _e -> e, | -> u
+    q = q.replace(/_e/g, 'e').replace(/\|/g, 'u');
+    // Remove control characters
+    q = q.replace(/[ -]/g, '');
+    // Strip leading business name prefix: if there's a comma followed by a
+    // street number, drop everything before that comma
+    // e.g. "First Floor Retail- Nuevo Atrisco Apartment Complex, 201 Unser..."
+    q = q.replace(/^[^,]+,\s*(?=\d+\s)/i, '');
+    // Strip unit/suite/apt identifiers (only match unit-like words followed by a number/letter code)
+    q = q.replace(/(Unit|Ste|Suite|Apt)\s*#?\s*[A-Za-z0-9-]+/gi, '');
+    // Strip standalone # numbers (e.g. "#109")
+    q = q.replace(/#\s*[0-9]+[A-Za-z]?/g, '');
+    // Strip floor indicators like "2F", "1.OG", "2nd Floor", "First Floor"
+    q = q.replace(/\d+(st|nd|rd|th)\s+floor/gi, '');
+    q = q.replace(/(first|second|third|ground)\s+floor/gi, '');
+    q = q.replace(/\d+\.\s*OG/gi, '');
+    // Strip "Col." (Mexican colonia prefix)
+    q = q.replace(/Col\.\s*/gi, '');
+    // Clean up leftover punctuation and whitespace
+    q = q.replace(/[,\s]{2,}/g, ', ').replace(/^[\s,]+|[\s,]+$/g, '');
+    return q;
+}
+
+// Build progressively simpler fallback queries by removing parts from the front
+function buildFallbacks(cleaned) {
+    var parts = cleaned.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+    var queries = [cleaned];
+    // Progressively drop leading parts to get neighborhood, then city level
+    for (var i = 1; i < parts.length && parts.length - i >= 1; i++) {
+        queries.push(parts.slice(i).join(', '));
+    }
+    return queries;
+}
+
 // ── Address search ──
 var searchMarker = null;
 
 function searchAddress() {
-    var query = document.getElementById('address-input').value.trim();
-    if (!query) return;
+    var raw = document.getElementById('address-input').value.trim();
+    if (!raw) return;
 
     var btn = document.getElementById('search-btn');
     btn.textContent = '...';
     btn.disabled = true;
 
-    // Use Nominatim (same geocoder as our data)
-    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(query);
+    var cleaned = cleanAddress(raw);
+    var queries = buildFallbacks(cleaned);
 
-    fetch(url)
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+    function tryQuery(idx) {
+        if (idx >= queries.length) {
             btn.textContent = 'Go';
             btn.disabled = false;
+            alert('Address not found. Try simplifying the address (e.g. remove suite/unit numbers or business names).');
+            return;
+        }
 
-            if (data.length === 0) {
-                alert('Address not found. Try a more specific address.');
-                return;
-            }
+        var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(queries[idx]);
 
-            var lat = parseFloat(data[0].lat);
-            var lon = parseFloat(data[0].lon);
+        fetch(url)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.length === 0) {
+                    // Try next simpler query
+                    tryQuery(idx + 1);
+                    return;
+                }
 
-            clearSearch();
+                btn.textContent = 'Go';
+                btn.disabled = false;
 
-            // Add a red marker for the searched location
-            searchMarker = L.marker([lat, lon], {
-                icon: L.divIcon({
-                    className: '',
-                    html: '<div style="width:14px;height:14px;background:#E53935;border:2.5px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>',
-                    iconSize: [14, 14],
-                    iconAnchor: [7, 7]
-                })
-            }).addTo(mapObj);
+                var lat = parseFloat(data[0].lat);
+                var lon = parseFloat(data[0].lon);
 
-            searchMarker.bindTooltip(
-                '<div style="font-family:Arial,sans-serif">' +
-                '<b style="color:#E53935">Spot Check</b><br>' +
-                '<span style="color:#555;font-size:11px">' + data[0].display_name + '</span></div>'
-            ).openTooltip();
+                clearSearch();
 
-            mapObj.setView([lat, lon], 8);
-            document.getElementById('clear-btn').style.display = 'inline-block';
-        })
-        .catch(function() {
-            btn.textContent = 'Go';
-            btn.disabled = false;
-            alert('Geocoding failed. Try again.');
-        });
+                // Add a red marker for the searched location
+                searchMarker = L.marker([lat, lon], {
+                    icon: L.divIcon({
+                        className: '',
+                        html: '<div style="width:14px;height:14px;background:#E53935;border:2.5px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>',
+                        iconSize: [14, 14],
+                        iconAnchor: [7, 7]
+                    })
+                }).addTo(mapObj);
+
+                var approxNote = idx > 0 ? '<br><span style="color:#E53935;font-size:10px">(approximate — city level)</span>' : '';
+                searchMarker.bindTooltip(
+                    '<div style="font-family:Arial,sans-serif">' +
+                    '<b style="color:#E53935">Spot Check</b><br>' +
+                    '<span style="color:#555;font-size:11px">' + data[0].display_name + '</span>' +
+                    approxNote + '</div>'
+                ).openTooltip();
+
+                mapObj.setView([lat, lon], idx > 0 ? 10 : 8);
+                document.getElementById('clear-btn').style.display = 'inline-block';
+            })
+            .catch(function() {
+                btn.textContent = 'Go';
+                btn.disabled = false;
+                alert('Geocoding failed. Try again.');
+            });
+    }
+
+    tryQuery(0);
 }
 
 function clearSearch() {
@@ -487,14 +542,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
     
-            <div class="folium-map" id="map_a6251db2d2e4d270fce280f076743f62" ></div>
+            <div class="folium-map" id="map_70959b1acc9d47b1ac58d8b4229c3900" ></div>
         
 </body>
 <script>
     
     
-            var map_a6251db2d2e4d270fce280f076743f62 = L.map(
-                "map_a6251db2d2e4d270fce280f076743f62",
+            var map_70959b1acc9d47b1ac58d8b4229c3900 = L.map(
+                "map_70959b1acc9d47b1ac58d8b4229c3900",
                 {
                     center: [39.8283, -98.5795],
                     crs: L.CRS.EPSG3857,
@@ -511,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         
     
-            var tile_layer_0638fe5187c5ed2cb54d3456a79ef510 = L.tileLayer(
+            var tile_layer_d13988034430c3e14b6be502136e4c04 = L.tileLayer(
                 "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
                 {
   "minZoom": 0,
@@ -528,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
             );
         
     
-            tile_layer_0638fe5187c5ed2cb54d3456a79ef510.addTo(map_a6251db2d2e4d270fce280f076743f62);
+            tile_layer_d13988034430c3e14b6be502136e4c04.addTo(map_70959b1acc9d47b1ac58d8b4229c3900);
         
 </script>
 </html>
