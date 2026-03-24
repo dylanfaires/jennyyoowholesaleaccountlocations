@@ -423,7 +423,7 @@ function cleanAddress(raw) {
     // Fix common encoding artifacts: _e -> e, | -> u
     q = q.replace(/_e/g, 'e').replace(/\|/g, 'u');
     // Remove control characters
-    q = q.replace(/[ -]/g, '');
+    q = q.replace(/[\u0000-\u001f]/g, '');
     // Strip leading business name prefix: if there's a comma followed by a
     // street number, drop everything before that comma
     // e.g. "First Floor Retail- Nuevo Atrisco Apartment Complex, 201 Unser..."
