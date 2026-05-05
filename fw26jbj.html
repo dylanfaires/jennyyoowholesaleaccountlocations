@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_fad8bcaea322edeaed5d2ffc36a254bf {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+<style>
+    #title-bar {
+        position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
+        z-index: 1000; background: white; padding: 14px 28px;
+        border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        font-family: 'Georgia', serif; text-align: center;
+    }
+    #title-bar h3 { margin: 0; color: #333; letter-spacing: 1px; }
+    #title-bar p { margin: 4px 0 0; color: #999; font-size: 12px; }
+
+    #filter-panel {
+        position: fixed; bottom: 30px; left: 10px; z-index: 1000;
+        background: white; padding: 16px 20px; border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        font-family: Arial, sans-serif; font-size: 13px;
+        line-height: 1.6; min-width: 260px; max-width: 300px;
+    }
+    #filter-panel .title { font-size: 15px; font-weight: bold; }
+    #filter-panel .subtitle { color: #999; font-size: 11px; margin-bottom: 10px; }
+    #filter-panel label {
+        display: flex; align-items: center; cursor: pointer;
+        padding: 4px 2px; user-select: none;
+    }
+    #filter-panel label:hover { background: #f5f5f5; border-radius: 4px; }
+    #filter-panel input[type="checkbox"] {
+        margin-right: 8px; width: 16px; height: 16px;
+        cursor: pointer; accent-color: #333;
+    }
+    .filter-dot {
+        display: inline-block; width: 14px; height: 14px;
+        border-radius: 50%; margin-right: 8px; flex-shrink: 0;
+        border: 2px solid white; box-shadow: 0 0 0 1px #ccc;
+    }
+    .filter-label-text { flex-grow: 1; }
+    .filter-count { color: #999; margin-left: 4px; }
+    #visible-count { font-weight: bold; font-size: 14px; }
+
+    #region-toggle {
+        position: fixed; top: 10px; right: 10px; z-index: 1000;
+        display: flex; gap: 4px; background: white; padding: 6px;
+        border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        font-family: Arial, sans-serif;
+    }
+    #region-toggle button {
+        padding: 6px 12px; border: 1px solid #ddd; background: white;
+        border-radius: 6px; font-size: 12px; cursor: pointer; color: #444;
+    }
+    #region-toggle button:hover { background: #f3f3f3; }
+    #region-toggle button.active { background: #333; color: white; border-color: #333; }
+
+    #unmatched-panel {
+        position: fixed; top: 90px; left: 10px; z-index: 1000;
+        background: white; padding: 12px 16px; border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        font-family: Arial, sans-serif; font-size: 12px;
+        max-width: 280px; max-height: 50vh; overflow-y: auto;
+    }
+    #unmatched-panel .um-title { font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+    #unmatched-panel .um-sub { color: #999; font-size: 11px; margin-bottom: 8px; }
+    #unmatched-panel .um-row {
+        padding: 6px 8px; margin: 4px 0; border-radius: 6px;
+        background: #f8f8f8; line-height: 1.4;
+    }
+    #unmatched-panel .um-row .um-name { font-weight: 600; color: #333; }
+    #unmatched-panel .um-row .um-note { font-size: 11px; color: #666; margin-top: 2px; }
+    #toggle-um {
+        background: none; border: none; color: #1976D2; cursor: pointer;
+        font-size: 11px; padding: 0;
+    }
+</style>
+
+<div id="title-bar">
+    <h3>FW26 JBJ Representation</h3>
+    <p>How current retailers are representing the FW26 JBJ collection</p>
+</div>
+
+<div id="region-toggle">
+    <button onclick="zoomTo('world')" class="active" id="btn-world">World</button>
+    <button onclick="zoomTo('us')" id="btn-us">US</button>
+    <button onclick="zoomTo('eu')" id="btn-eu">Europe</button>
+    <button onclick="zoomTo('au')" id="btn-au">AU/NZ</button>
+</div>
+
+<div id="filter-panel">
+    <div class="title"><span id="visible-count">151</span> Accounts</div>
+    <div class="subtitle">94 US &middot; 57 Int'l &middot; matching colors from your doc</div>
+
+    <label>
+        <input type="checkbox" id="cb-full" checked onchange="applyFilters()">
+        <span class="filter-dot" style="background:#2E7D32"></span>
+        <span class="filter-label-text"><b>Full capsule</b></span>
+        <span class="filter-count">(89)</span>
+    </label>
+    <label>
+        <input type="checkbox" id="cb-partial" checked onchange="applyFilters()">
+        <span class="filter-dot" style="background:#F9A825"></span>
+        <span class="filter-label-text"><b>Partial</b> / minus styles</span>
+        <span class="filter-count">(34)</span>
+    </label>
+    <label>
+        <input type="checkbox" id="cb-minimal" checked onchange="applyFilters()">
+        <span class="filter-dot" style="background:#C62828"></span>
+        <span class="filter-label-text"><b>Passing / minimal</b></span>
+        <span class="filter-count">(28)</span>
+    </label>
+
+    <div style="border-top:1px solid #eee;margin-top:8px;padding-top:8px;color:#777;font-size:11px;line-height:1.5">
+        Hover a marker to see what they ordered.<br>
+        <button id="toggle-um" onclick="toggleUnmatched()">Show 10 new/unmapped accounts</button>
+    </div>
+</div>
+
+<div id="unmatched-panel" style="display:none">
+    <div class="um-title">New / Unmapped accounts</div>
+    <div class="um-sub">Not in geocoded customer list (likely brand-new). Listed for reference.</div>
+    <div id="um-list"></div>
+</div>
+
+<script>
+var storeData = [{"id": 0, "name": "Coastal Knot Bridal (RALEIGH)", "geo_name": "Coastal Knot Bridal-Raleigh", "email": "Ahopesasser@aol.com", "note": "placed full capsule on 2/24/26", "address": "410 S Salisbury St<br>Suite 100<br>Raleigh, NC<br>27601", "lat": 35.7803977, "lon": -78.6390989, "category": "full", "is_us": true}, {"id": 1, "name": "Miss Ruby - A Bridal Boutique", "geo_name": "Miss Ruby - A Bridal Boutique", "email": "info@missrubyboutique.com", "note": "placed full capsule", "address": "313 N Plankinton Av<br>Milwaukee, WI<br>53203", "lat": 43.0386475, "lon": -87.9090751, "category": "full", "is_us": true}, {"id": 2, "name": "Chantilly Couture", "geo_name": "Chantilly Couture", "email": "info@chantillybridalstudio.com", "note": "placed full capsule", "address": "1715 Morningside Dr.<br>Blanchard, OK<br>73010", "lat": 35.1380007, "lon": -97.6583681, "category": "full", "is_us": true}, {"id": 3, "name": "Blanc de Blanc- Pittsburgh", "geo_name": "Blanc de Blanc- Pittsburgh", "email": "sales@blancdeblancbridal.com", "note": "placed full capsule", "address": "350 Eutaw St<br>Pittsburgh, PA<br>15211", "lat": 40.4406968, "lon": -80.0025666, "category": "full", "is_us": true}, {"id": 4, "name": "Birch on Main", "geo_name": "Birch on Main", "email": "birchonmain@gmail.com", "note": "placed full capsule + 5 carryover styles on 3/3/26", "address": "15506 Line Road<br>Athens, AL<br>35613", "lat": 34.8045487, "lon": -86.9711698, "category": "full", "is_us": true}, {"id": 5, "name": "Blue House Bridal", "geo_name": "Blue House Bridal", "email": "info@bluehousebridal.com", "note": "placed full capsule on 3/4/26", "address": "31 S Rangeline Road<br>Carmel, IN<br>46032", "lat": 39.9784186, "lon": -86.1283681, "category": "full", "is_us": true}, {"id": 6, "name": "Calvet Couture-Sarasota", "geo_name": "Calvet Couture-Sarasota", "email": "ccbsarasota@gmail.com", "note": "placed full capsule on 2/26/25", "address": "1409 1st St<br>Sarasota, FL<br>34236", "lat": 27.3365805, "lon": -82.5308545, "category": "full", "is_us": true}, {"id": 7, "name": "Juniper James Bridal", "geo_name": "Juniper James Bridal", "email": "hello@juniperjamesbridal.com", "note": "placed full capsule on 3/5/26", "address": "275 East King Street, Suite D<br>Boone, NC<br>28607", "lat": 36.2187873, "lon": -81.684004, "category": "full", "is_us": true}, {"id": 8, "name": "Rosalie", "geo_name": "Rosalie", "email": "info@rosaliebride.com", "note": "placed full capsule", "address": "1345 SW Park Square<br>Suite 100<br>Ankeny, IA<br>50023", "lat": 41.7320796, "lon": -93.605092, "category": "full", "is_us": true}, {"id": 9, "name": "LUTKA BOUTIQUE", "geo_name": "LUTKA BOUTIQUE", "email": "info@lutkaboutique.com.au", "note": "placed full capsule on 2/26/26", "address": "51 Queen Victoria St<br>Shop 4<br>Fremantle<br>6160", "lat": -32.0534086, "lon": 115.7586172, "category": "full", "is_us": false}, {"id": 10, "name": "White Satin Bridal Couture", "geo_name": "White Satin Bridal Couture", "email": "que.trang@whitesatin.ca", "note": "placed full capsule", "address": "9 LUCAS LANE<br>STITTSVILLE, ON<br>K2S1S5", "lat": 45.2584759, "lon": -75.9206345, "category": "full", "is_us": false}, {"id": 11, "name": "Blush & Raven", "geo_name": "Blush and Raven", "email": "liane@blushandraven.com", "note": "placed full capsule", "address": "201-903 10th Ave SW<br>Calgary<br>T2R0P5", "lat": 51.0389088, "lon": -114.0645725, "category": "full", "is_us": false}, {"id": 12, "name": "Pearl Bridal House", "geo_name": "Pearl Bridal House", "email": "info@pearlbridalhouse.com", "note": "placed full capsule", "address": "72 Jutland Road, Unit 19<br>Toronto, ON<br>M8Z 0G7", "lat": 43.6534817, "lon": -79.3839347, "category": "full", "is_us": false}, {"id": 13, "name": "Everly Fine Bridal", "geo_name": "Everly Fine Bridal", "email": "hello@everlyfinebridal.com", "note": "placed full capsule", "address": "2840 West 32 Avenue<br>Vancouver, BC<br>V6L 2B8", "lat": 49.2608724, "lon": -123.113952, "category": "full", "is_us": false}, {"id": 14, "name": "Luft & Liebe Brautmode", "geo_name": "Luft & Liebe Brautmode", "email": "info@luftundliebe-brautmoden.de", "note": "placed full capsule", "address": "Hovedisser Str. 2<br>Leopoldshoehe<br>33818", "lat": 52.0064215, "lon": 8.6888207, "category": "full", "is_us": false}, {"id": 15, "name": "Frieda Bridal", "geo_name": "Frieda Brides Pte Ltd", "email": "info@friedabrides.com", "note": "placed full capsule on 2/26/26 + 2 carryover styles", "address": "45A (Level 2)<br>Kampong Bahru Road<br>Singapore<br>S169360", "lat": 1.2899175, "lon": 103.8519072, "category": "full", "is_us": false}, {"id": 16, "name": "The Bridal Curator", "geo_name": "The Bridal Curator", "email": "curator@thebridalcurator.com.au", "note": "placed full capsule on 2/24/26", "address": "169 High Street<br>Prahran<br>3181", "lat": -37.849953, "lon": 144.9898165, "category": "full", "is_us": false}, {"id": 17, "name": "Flamingo Boulevard Bridal", "geo_name": "Flamingo Boulevard Bridal", "email": "jazmin@flamingoboulevard.co.uk", "note": "placed full capsule + 1 carryover style on 3/4/26", "address": "The Tapestry, Kempston St<br>Liverpool<br>L38HL", "lat": 53.410494, "lon": -2.9704241, "category": "full", "is_us": false}, {"id": 18, "name": "Olive & Juno", "geo_name": "Olive & Juno", "email": "Hello@oliveandjuno.be", "note": "placed full capsule", "address": "Korenmarkt 40<br>Mechelen<br>2800", "lat": 51.0177129, "lon": 4.483742, "category": "full", "is_us": false}, {"id": 19, "name": "Jenari - Bridal Concept Store", "geo_name": "Jenari - Bridal Concept Store", "email": "n.bronzel@jenari.de", "note": "placed full capsule on 2/24/26", "address": "Friedrich - Ebert Stra_e 55<br>Wuppertal<br>42103", "lat": 51.2534763, "lon": 7.139068, "category": "full", "is_us": false}, {"id": 20, "name": "Lily Saratoga", "geo_name": "Lily Saratoga", "email": "info@lilysaratoga.com", "note": "placed full capsule", "address": "6 Franklin Square<br>Saratoga Springs, NY<br>12866", "lat": 43.0821793, "lon": -73.7853915, "category": "full", "is_us": true}, {"id": 21, "name": "The Bridal Curator- Sydney", "geo_name": "The Bridal Curator- Sydney", "email": "sydney@thebridalcurator.com.au", "note": "placed full capsule on 2/24/26", "address": "655 Botany Road<br>Rosebery<br>2018", "lat": -33.9185861, "lon": 151.204692, "category": "full", "is_us": false}, {"id": 22, "name": "Unbridaled", "geo_name": "Unbridaled", "email": "austin@unbridaled.com", "note": "placed full capsule", "address": "702 S. Lamar Blvd. Ste. D<br>Austin, TX<br>78704", "lat": 30.2711286, "lon": -97.7436995, "category": "full", "is_us": true}, {"id": 23, "name": "The White Dress by the Shore", "geo_name": "The White Dress by the Shore", "email": "info@thewhitedressbytheshore.com", "note": "placed full capsule on 3/3/26", "address": "104 East Main St.<br>Clinton, CT<br>06413", "lat": 41.2787104, "lon": -72.5275904, "category": "full", "is_us": true}, {"id": 24, "name": "Wedding belles", "geo_name": "Wedding belles", "email": "belles@weddingbellesnola.com", "note": "placed full capsule", "address": "3632 Magazine Street<br>New Orleans, LA<br>70115", "lat": 29.9561422, "lon": -90.0733934, "category": "full", "is_us": true}, {"id": 25, "name": "Swoon- A bridal Salon", "geo_name": "Swoon- A bridal Salon", "email": "swoon@swoonbridal.com", "note": "placed full capsule on 2/26/26 + 2 carryover styles", "address": "530 W. Plumb Lane Suite E<br>Reno, NV<br>89509", "lat": 39.5261788, "lon": -119.812658, "category": "full", "is_us": true}, {"id": 26, "name": "Twirl Lexington", "geo_name": "Twirl Lexington", "email": "ty@twirllexington.com", "note": "placed full capsule on 2/24/26", "address": "121 Clay Avenue<br>Lexington, KY<br>40502", "lat": 38.0464066, "lon": -84.4970393, "category": "full", "is_us": true}, {"id": 27, "name": "Rana Bridal", "geo_name": "Rana Bridal", "email": "Ranabridal@gmail.com", "note": "placed full capsule on 3/3/26", "address": "11 Jay Street<br>TENAFLY, NJ<br>07670", "lat": 40.9253766, "lon": -73.9629154, "category": "full", "is_us": true}, {"id": 28, "name": "J. Major's Bridal Boutique", "geo_name": "J. Major's Bridal Boutique", "email": "info@jmajors.com", "note": "placed full capsule on 2/26/26 + 2 carryovers", "address": "1900 South Blvd<br>STE 150<br>Charlotte, NC<br>28203", "lat": 35.2272086, "lon": -80.8430827, "category": "full", "is_us": true}, {"id": 29, "name": "Always Elegant Bridal", "geo_name": "Always Elegant- Chico", "email": "design@weddingtulle.com", "note": "placed full capsule", "address": "1199 Butte House Rd<br>Suite A<br>Yuba City, CA<br>95991", "lat": 39.1404477, "lon": -121.6169108, "category": "full", "is_us": true}, {"id": 30, "name": "Ready or Knot Weddings LLC", "geo_name": "Ready or Knot Weddings LLC", "email": "hello@readyorknotweddings.com", "note": "placed full capsule", "address": "11009 Elm Street<br>Omaha, NE<br>68144", "lat": 41.2587459, "lon": -95.9383758, "category": "full", "is_us": true}, {"id": 31, "name": "Kelly's Closet", "geo_name": "Kelly's Closet", "email": "stuff@kellyscloset.net", "note": "placed full capsule on 3/5/26", "address": "1653D McLendon Ave. NE<br>Atlanta, GA<br>30307", "lat": 33.7544657, "lon": -84.3898151, "category": "full", "is_us": true}, {"id": 32, "name": "Calvet Couture-Winter Park", "geo_name": "Calvet Couture-Winter Park", "email": "calvetcouture@gmail.com", "note": "placed full capsule on 2/26/25", "address": "460 N orlando Ave STE 100<br>Winter Park, FL<br>32789", "lat": 28.5977707, "lon": -81.3510264, "category": "full", "is_us": true}, {"id": 33, "name": "Alexandra Anne Bridal", "geo_name": "Alexandra Anne Bridal", "email": "hello@alexandra-anne.co.uk", "note": "placed full capsule on 3/4/26", "address": "2 The Laundry, Hathersage Hall<br>Hope Valley, Derbyshire<br>S32 1BB, UK", "lat": 53.3285, "lon": -1.6318, "category": "full", "is_us": false}, {"id": 34, "name": "Isabel Oneil Bridal", "geo_name": "Isabel O'Neil Bridal", "email": "isabel@isabelbridal.com", "note": "placed full capsule", "address": "1540 South Dale Marby Highway<br>Tampa, FL<br>33629", "lat": 27.9449854, "lon": -82.4583107, "category": "full", "is_us": true}, {"id": 35, "name": "Jennifer's Bridal", "geo_name": "Jennifer's Bridal", "email": "brides@jennifersbridal.com", "note": "placed full capsule", "address": "500 Hockessin Corner<br>Hockessin, DE<br>19707", "lat": 39.7876112, "lon": -75.6966001, "category": "full", "is_us": true}, {"id": 36, "name": "White Lace and Promises", "geo_name": "White Lace and Promises", "email": "whitelacebridalcp@gmail.com", "note": "placed full capsule on 2/26/26", "address": "8025 Kingston Pike Suite #4<br>Knoxville, TN<br>37919", "lat": 35.9603948, "lon": -83.9210261, "category": "full", "is_us": true}, {"id": 37, "name": "The One Bridal Salon", "geo_name": "The One Bridal Salon", "email": "kelsey@theonebridalsalon.com", "note": "placed full capsule on 3/3/26", "address": "603 W Main St.<br>Charlottesville, VA<br>22903", "lat": 38.029306, "lon": -78.4766781, "category": "full", "is_us": true}, {"id": 38, "name": "Bridal Parlour", "geo_name": "Bridal Parlour", "email": "info@bridalparlour.net", "note": "placed full capsule", "address": "3630 Green Mount Crossing Dr.<br>Shiloh, IL<br>62269", "lat": 38.5614383, "lon": -89.8973233, "category": "full", "is_us": true}, {"id": 39, "name": "Lilibet Bridal", "geo_name": "Lilibet Bridal", "email": "hello@lilibetbridal.com", "note": "placed capsule on 3/5/26 (swapped one style)", "address": "4462 Bit and Spur Road<br>Mobile, AL<br>36608", "lat": 30.6972412, "lon": -88.1892334, "category": "full", "is_us": true}, {"id": 40, "name": "Blanc de Blanc- Chagrin Falls", "geo_name": "Blanc de Blanc- Chagrin Falls", "email": "angelea@blancdeblancbridal.com", "note": "placed full capsule", "address": "49 West Orange Street<br>Chagrin Falls, OH<br>44022", "lat": 41.436589, "lon": -81.3855058, "category": "full", "is_us": true}, {"id": 41, "name": "First Look Bridal Boutique", "geo_name": "First Look Bridal Boutique", "email": "firstlookbridalmi@gmail.com", "note": "placed full capsule minus veil", "address": "908 Washington Ave<br>Bay City, MI<br>48708", "lat": 43.5962107, "lon": -83.8881711, "category": "full", "is_us": true}, {"id": 42, "name": "Wildflower Bridal", "geo_name": "Wildflower Bridal", "email": "margaux@wildflowerbridal.com", "note": "placed full capsule", "address": "7 Mallory Meadows Court<br>c/o Margaux Weinstock<br>Arden, NC<br>28704", "lat": 35.4661821, "lon": -82.5164242, "category": "full", "is_us": true}, {"id": 43, "name": "The Magnolia Bride", "geo_name": "The Magnolia Bride", "email": "nicole@themagnoliabride.com", "note": "placed 10 styles + 1 carryover", "address": "1213 Carriage House Drive<br>Colfax, NC<br>27235", "lat": 36.1126365, "lon": -80.0144842, "category": "full", "is_us": true}, {"id": 44, "name": "DayDream Bridal", "geo_name": "DayDream Bridal", "email": "contact@daydreambridalshop.com", "note": "placed full capsule", "address": "1432 Heather Hills Lane<br>Glen Mills, PA<br>19342", "lat": 39.919698, "lon": -75.4904323, "category": "full", "is_us": true}, {"id": 45, "name": "Rare Bridal Studio", "geo_name": "Rare Bridal Studio", "email": "hello@rarebridalstudio.co.uk", "note": "placed full capsule order on 3/4/26", "address": "4 Vermont House<br>Washington<br>NE372SQ", "lat": 54.9117449, "lon": -1.5148862, "category": "full", "is_us": false}, {"id": 46, "name": "Clifton Bridal Boutique", "geo_name": "Clifton Bridal Boutique", "email": "katie@cliftonbridalboutique.com", "note": "placed full capsule", "address": "12642 Chapel Road<br>Clifton, VA<br>20124", "lat": 38.7802651, "lon": -77.3867133, "category": "full", "is_us": true}, {"id": 47, "name": "L Bridal Couture", "geo_name": "L Bridal Couture", "email": "hello@lbridalcouture.com", "note": "placed full capsule on 3/5/26", "address": "5656 Nelson Rd<br>Ste A3<br>Lake Charles, LA<br>70605", "lat": 30.1949047, "lon": -93.2483933, "category": "full", "is_us": true}, {"id": 48, "name": "Brudebutikken", "geo_name": "Brudebutikken", "email": "kontakt@brudebutikken.dk", "note": "placed full capsule+ carry overs", "address": "Langelinie Alle 25C<br>Copenhagen<br>2100", "lat": 55.7071696, "lon": 12.5720392, "category": "full", "is_us": false}, {"id": 49, "name": "Ivory House", "geo_name": "Ivory House Bride", "email": "hello@ivoryhousebride.com", "note": "placed full capsule on 2/28/26", "address": "1517 4th Ave<br>CANYON, TX<br>79015", "lat": 34.9789849, "lon": -101.9281915, "category": "full", "is_us": true}, {"id": 50, "name": "Atelier Lawenda Berlin", "geo_name": "Atelier Lawenda Berlin", "email": "atelierlawenda.bridal@gmail.com", "note": "placed full capsule", "address": "Torstra_e 172/1.OG<br>Berlin<br>10115", "lat": 52.5242131, "lon": 13.3735293, "category": "full", "is_us": false}, {"id": 51, "name": "a&b\u00e9 x anna b\u00e9 Atlanta", "geo_name": "a&be x anna be Atlanta", "email": "helloatlanta@aandbebridalshop.com", "note": "placed 11 styles", "address": "3072 Early St NW Suite 103<br>Atlanta, GA<br>30305", "lat": 33.7544657, "lon": -84.3898151, "category": "full", "is_us": true}, {"id": 52, "name": "Honest in Ivory", "geo_name": "Honest in Ivory", "email": "orders@honestinivory.com", "note": "placed full capsule on 2/26/26", "address": "123 E Sprague Ave<br>Spokane, WA<br>99202", "lat": 47.6571934, "lon": -117.42351, "category": "full", "is_us": true}, {"id": 53, "name": "Sero Bridal", "geo_name": "Sero Bridal", "email": "info@serobridal.com", "note": "placed full capsule on 2/26/26", "address": "2207 N Center St<br>Hickory, NC<br>28601", "lat": 35.7333312, "lon": -81.3442915, "category": "full", "is_us": true}, {"id": 54, "name": "Velvet Bride", "geo_name": "Velvet Bride", "email": "hello@velvetbride.com", "note": "placed full capsule 3/4/26", "address": "420 N Higgins Ave<br>Suite C<br>Missoula, MT<br>59802", "lat": 46.8701049, "lon": -113.995267, "category": "full", "is_us": true}, {"id": 55, "name": "Bespoke Bride-Bend", "geo_name": "Bespoke Bride- Bend", "email": "hello@bespokebride.com", "note": "placed full capsule", "address": "555 NW Arizona Ave<br>Suite 10<br>Bend, OR<br>97703", "lat": 44.0581728, "lon": -121.3153096, "category": "full", "is_us": true}, {"id": 56, "name": "Bespoke Bride-Boise", "geo_name": "Bespoke Bride- Boise", "email": "hello@bespokebride.com", "note": "placed full capsule", "address": "Boise, ID", "lat": 43.615, "lon": -116.2023, "category": "full", "is_us": true}, {"id": 57, "name": "A&Be Bridal- Charlotte", "geo_name": "A&Be Bridal Shop Charlotte", "email": "hellocharlotte@aandbebridalshop.com", "note": "placed 10 styles", "address": "2135 Thrift Road, Suite 105<br>Charlotte, NC<br>28208", "lat": 35.2272086, "lon": -80.8430827, "category": "full", "is_us": true}, {"id": 58, "name": "Brides x Laurel E", "geo_name": "Brides x Laurel E", "email": "bridesxlaurele@gmail.com", "note": "placed full capsule", "address": "1212 Dundale Circle<br>Sherman, TX<br>75092", "lat": 33.6398609, "lon": -96.6089146, "category": "full", "is_us": true}, {"id": 59, "name": "Astrid & Wild", "geo_name": "Astrid & Wild", "email": "hello@astridandwild.co.uk", "note": "placed full capsule", "address": "13 Meadow Glade<br>Hixon<br>Staffordshire<br>ST18 0LA", "lat": 52.847969, "lon": -2.0092824, "category": "full", "is_us": false}, {"id": 60, "name": "Velum Bridal Queretaro", "geo_name": "Velum Bridal Queretaro", "email": "claudia@velumbridal.com", "note": "placed 11 styles", "address": "Av. Universidad 343-A Alamos Primera<br>Queretaro<br>76000", "lat": 20.5918168, "lon": -100.3925831, "category": "full", "is_us": false}, {"id": 61, "name": "Velum Bridal Culiac\u00e1n", "geo_name": "Velum Bridal Culiacan", "email": "gerencia.cln@velumbridal.com", "note": "placed 11 styles", "address": "Edel Castellanos 80<br>Culiacan, Sinaloa, Mexico", "lat": 24.8091, "lon": -107.394, "category": "full", "is_us": false}, {"id": 62, "name": "Breeze Bridal", "geo_name": "Breeze Bridal", "email": "breezebridal@gmail.com", "note": "placed full capsule on 2/26/26 + 1 carryover", "address": "3200 Penn Terrace #115<br>Columbia, MO<br>65202", "lat": 38.951883, "lon": -92.3337366, "category": "full", "is_us": true}, {"id": 63, "name": "Ellynne Bridal", "geo_name": "Ellynne Bridal", "email": "rachaelbell@ellynnebridal.com", "note": "placed full capsule", "address": "4400 S 70th St #120<br>Lincoln, NE<br>68516", "lat": 40.8088861, "lon": -96.7077751, "category": "full", "is_us": true}, {"id": 64, "name": "Luxe (Tasmania)", "geo_name": "Luxe (Tasmania)", "email": "luxe@luxestore.com.au", "note": "placed full capsule", "address": "134 Liverpool Street<br>Hobart<br>7000", "lat": -42.882393, "lon": 147.3258481, "category": "full", "is_us": false}, {"id": 65, "name": "Bridal Indulgence", "geo_name": "Bridal Indulgence", "email": "hello@bridalindulgence.co.uk", "note": "placed full capsule on 3/5/26", "address": "penn croft farm, The Cart House, Crondall<br>Farnham<br>Crondall,Hampshire<br>GU10 5PX", "lat": 51.2313609, "lon": -0.8663486, "category": "full", "is_us": false}, {"id": 66, "name": "Ivory & White", "geo_name": "Ivory and White", "email": "hello@ivorywhiteboutique.com", "note": "placed full capsule", "address": "55 Church Street<br>Birmingham, AL<br>35213", "lat": 33.5206824, "lon": -86.8024326, "category": "full", "is_us": true}, {"id": 67, "name": "Modern Romance", "geo_name": "Modern Romance", "email": "info@modernromance.nl", "note": "placed full capsule", "address": "Hilvertsweg 126<br>Hilversum<br>1214 JK", "lat": 52.2142944, "lon": 5.1676688, "category": "full", "is_us": false}, {"id": 68, "name": "Aura Bridal Studio", "geo_name": "Aura Bridal Studio", "email": "Bianca@aurabridalstudio.com", "note": "cherry pick offer- placed 10 styles", "address": "81 nowack avenue<br>Umina Beach<br>2257", "lat": -33.5177778, "lon": 151.3094444, "category": "full", "is_us": false}, {"id": 69, "name": "A&Be Bridal Shop Austin", "geo_name": "A&Be Bridal Shop Austin", "email": "helloaustin@aandbebridalshop.com", "note": "placed 11 styles", "address": "2905 San Gabriel St Suite #102<br>Austin, TX<br>78705", "lat": 30.2711286, "lon": -97.7436995, "category": "full", "is_us": true}, {"id": 70, "name": "Elle James Bridal", "geo_name": "Elle James Bridal", "email": "orders@ellejamesbridal.com", "note": "placed full capsule", "address": "116 W Jackson Street<br>Ridgeland, MS<br>39157", "lat": 32.4284761, "lon": -90.1323087, "category": "full", "is_us": true}, {"id": 71, "name": "Bridal Boutique Lewisville", "geo_name": "Bridal Boutique Lewisville", "email": "orders@bridalboutiquelewisville.com", "note": "placed full capsule", "address": "143 West Main<br>Lewisville, TX<br>75077", "lat": 33.046233, "lon": -96.994174, "category": "full", "is_us": true}, {"id": 72, "name": "Bliss Bridal Kelowna (2nd email)", "geo_name": "Bliss Bridal Kelowna", "email": "cristina@blissbridal.ca", "note": "placed full capsule", "address": "107-590 K.L.O Rd<br>Kelowna, BC<br>V1Y 7S2", "lat": 49.8621833, "lon": -119.4901938, "category": "full", "is_us": false}, {"id": 73, "name": "AM Bridal", "geo_name": "AM Bridal", "email": "brides@ambridaltn.com", "note": "placed full capsule", "address": "93 Kensington Way<br>Dyersburg, TN<br>38024", "lat": 36.0325216, "lon": -89.3866375, "category": "full", "is_us": true}, {"id": 74, "name": "Lovely Bride- Providence", "geo_name": "Lovely Bride- Providence", "email": "pvd@lovelybride.com", "note": "placed 11 styles", "address": "Providence, RI", "lat": 41.824, "lon": -71.4128, "category": "full", "is_us": true}, {"id": 75, "name": "White by Green", "geo_name": "White by Green", "email": "post@whitebygreen.no", "note": "placed full capsule", "address": "Lambrechts gate 8<br>Oslo<br>0262", "lat": 59.9167067, "lon": 10.711625, "category": "full", "is_us": false}, {"id": 76, "name": "The Wedding Boutique (CT)", "geo_name": "The Wedding Boutique (CT)", "email": "tiana@theweddingboutique.co.za", "note": "placed full capsule", "address": "172 Victoria Rd<br>Woodstock, Cape Town<br>South Africa", "lat": -33.9268, "lon": 18.4449, "category": "full", "is_us": false}, {"id": 77, "name": "The Wedding Boutique (JHB)", "geo_name": "The Wedding Boutique (JHB)", "email": "nikki@theweddingboutique.co.za", "note": "placed full capsule", "address": "18 Archimedes Street<br>Kramerville, Sandton<br>2090", "lat": -26.0895, "lon": 28.0778, "category": "full", "is_us": false}, {"id": 78, "name": "The Attic Bridalwear Boutique", "geo_name": "The Attic Bridalwear Boutique", "email": "info@theatticbridalwearboutique.com", "note": "placed full capsule on 2/28/26", "address": "8 Roches Street<br>Limerick<br>V94K6K8", "lat": 52.661252, "lon": -8.6301239, "category": "full", "is_us": false}, {"id": 79, "name": "Elevated Bridal", "geo_name": "Elevated Bridal", "email": "jamie@elevatedbridal.com", "note": "placed full capsule on 2/24/26", "address": "4815 Old Bullard Road<br>Suite 106<br>Tyler, TX<br>75703", "lat": 32.3512601, "lon": -95.3010624, "category": "full", "is_us": true}, {"id": 80, "name": "Fifi & Edga Bridal", "geo_name": "Fifi & Edga Bridal", "email": "catherine@fifiandedga.com", "note": "Include 4 acessories- placed 8 styles+ 1 carryover CONFIRMING", "address": "21 View Point<br>Bendigo<br>3550", "lat": -36.7590183, "lon": 144.2826718, "category": "full", "is_us": false}, {"id": 81, "name": "Magnolia Bridal House", "geo_name": "Magnolia Bridal House", "email": "hello@magnoliabridalhouse.com", "note": "placed full capsule", "address": "1704 S Green River Rd<br>Evansville, IN<br>47715", "lat": 37.970495, "lon": -87.5715641, "category": "full", "is_us": true}, {"id": 82, "name": "Head Over Heels Bridal Boutiqu", "geo_name": "Head Over Heels Bridal Boutiqu", "email": "info@hohbridal.com", "note": "placed full capsule", "address": "57 Old Colony Drive<br>Mashpee, MA<br>02649", "lat": 41.6484421, "lon": -70.4811383, "category": "full", "is_us": true}, {"id": 83, "name": "La Jeune Mariee Bridal", "geo_name": "La Jeune Mariee Bridal", "email": "ido@lajeunemariee.com", "note": "placed full capsule on 3/2/26", "address": "5222 Olentangy River Rd<br>Columbus, OH<br>43235", "lat": 39.9622601, "lon": -83.0007065, "category": "full", "is_us": true}, {"id": 84, "name": "Ma Cherie Bleue", "geo_name": "Ma Cherie Bleue", "email": "macheriebleue@gmail.com", "note": "placed full capsule", "address": "303 Chemin De La Grande Cote<br>Suite 200<br>Rosemere, QE<br>J7A 1J7", "lat": 45.6345663, "lon": -73.7959015, "category": "full", "is_us": false}, {"id": 85, "name": "Urban Set Bride", "geo_name": "Urban Set Bride", "email": "info@urbansetbride.com", "note": "placed full capsule on 2/25/26 + 3 carryover styles", "address": "602 N 29th St<br>Richmond, VA<br>23223", "lat": 37.5385087, "lon": -77.43428, "category": "full", "is_us": true}, {"id": 86, "name": "Coastal Knot Bridal", "geo_name": "Coastal Knot Bridal", "email": "coastalknot@aol.com", "note": "placed full capsule on 2/24/26", "address": "1616 Shipyard Blvd<br>Wilmington, NC 28412", "lat": 34.2257, "lon": -77.9447, "category": "full", "is_us": true}, {"id": 87, "name": "Maison Mari\u00e9e by TC", "geo_name": "Maison Mariee", "email": "emily@styledbytc.com", "note": "placed full capsule on 2/26/26", "address": "2922 E. Chapman Ave<br>Orange, CA<br>92869", "lat": 33.750631, "lon": -117.8722311, "category": "full", "is_us": true}, {"id": 88, "name": "Lovely Bride-Rochester", "geo_name": "Lovely Bride-Rochester", "email": "rochester@lovelybride.com", "note": "placed full capsule on 2/25/26", "address": "72 W Main St<br>Victor, NY<br>14564", "lat": 42.9825634, "lon": -77.4088794, "category": "full", "is_us": true}, {"id": 89, "name": "The Ivory Bridal", "geo_name": "The Ivory Bridal", "email": "theivorybridal@gmail.com", "note": "waiting on order from BCN", "address": "The MET Corporate Towers, 20<br>Level 25, Unit 12<br>Mont Kiara<br>50480", "lat": 3.1650799, "lon": 101.650882, "category": "minimal", "is_us": false}, {"id": 90, "name": "Jasmine Lilly Bridal", "geo_name": "Jasmine Lilly Bridal", "email": "jasminelillybridal@gmail.com", "note": "added 4 styles from JBJ after major pushback and letting go of territory", "address": "102 Eagle Fjord Ct<br>Unit E<br>Bozeman, MT<br>59718", "lat": 45.6794293, "lon": -111.044047, "category": "minimal", "is_us": true}, {"id": 91, "name": "Twelve South Bridal", "geo_name": "Twelve South Bridal", "email": "accounts@twelvesouthbridal.com.au", "note": "2 dresses, 2 accessories. no disc", "address": "3 Village Walk<br>Yarragon<br>3823", "lat": -38.186209, "lon": 146.0859833, "category": "minimal", "is_us": false}, {"id": 92, "name": "Delica Bridal", "geo_name": "Delica Bridal", "email": "nicole@delicabridal.com", "note": "originally placed 2 styles & CT pushed back and she placed reminder of capsule", "address": "2951 Ellwood Drive, Suite #108<br>Edmonton, AB<br>T6XOB1", "lat": 53.5462055, "lon": -113.491241, "category": "minimal", "is_us": false}, {"id": 93, "name": "Halo & Wren", "geo_name": "Halo & Wren", "email": "hello@haloandwrenbridal.com", "note": "place 5 styles after pushing back", "address": "85 High Street<br>Old Town<br>HP13AH", "lat": 51.7595527, "lon": -0.4721542, "category": "minimal", "is_us": false}, {"id": 94, "name": "Carrie Karibo", "geo_name": "Carrie Karibo", "email": "info@carriekaribobridal.com", "note": "passing, just wants the sleeve. doesnt feel the gowns fill any holes this season", "address": "334 West Benson Street<br>Cincinnati, OH<br>45215", "lat": 39.1014537, "lon": -84.5124602, "category": "minimal", "is_us": true}, {"id": 95, "name": "Garnish Boutique", "geo_name": "Garnish Boutique", "email": "info@garnishboutique.com", "note": "placed 1 sample + 1 topper after 2 attempts of pushback on 3/5/26", "address": "1516 LaBelle Ave. Ste. 3<br>Baltimore, MD<br>21204", "lat": 39.2908816, "lon": -76.610759, "category": "minimal", "is_us": true}, {"id": 96, "name": "Magnolia Lane- Detroit", "geo_name": "Magnolia Lane- Detroit", "email": "detroitconfirmations@gmail.com", "note": "placed 4 styles", "address": "Detroit, MI", "lat": 42.3314, "lon": -83.0458, "category": "minimal", "is_us": true}, {"id": 97, "name": "An Elegant Affair", "geo_name": "An Elegant Affair", "email": "info@anelegantaffairbridal.com", "note": "placed 6 styles", "address": "215 Main Street<br>Cedar Falls, IA<br>50613", "lat": 42.5361805, "lon": -92.447758, "category": "minimal", "is_us": true}, {"id": 98, "name": "The Ivory Edit", "geo_name": "The Ivory Edit", "email": "info@theivoryedit.co.uk", "note": "placed 5 samples on 3/5/26", "address": "Ashby Rd East Burton<br>Derbyshire<br>DE15OPS", "lat": 53.1185033, "lon": -1.5566179, "category": "minimal", "is_us": false}, {"id": 99, "name": "Chloe Jane Bridalwear", "geo_name": "Chloe Jane Bridalwear", "email": "chloe@chloejanebridalwear.co.uk", "note": "placed 8 styles and dropped JYC", "address": "26 Market Place<br>Howden<br>East Riding of Yorkshire<br>DN147BL", "lat": 53.7451852, "lon": -0.8664678, "category": "minimal", "is_us": false}, {"id": 100, "name": "The White Peony", "geo_name": "The White Peony", "email": "hello@thewhitepeony.com", "note": "placed 5 styles + 2 accessories on 3/5/26", "address": "1107 Quatsino Drive<br>North Saanich<br>North Saanich<br>V8L5R8", "lat": 48.6563671, "lon": -123.432794, "category": "minimal", "is_us": false}, {"id": 101, "name": "Hera Zurich", "geo_name": "Hera Zurich", "email": "info@hera-zuerich.ch", "note": "ordered 4 samples, 1 topper, 1 cape on 2/25/26", "address": "M|llerstrasse 45<br>Zurich<br>8004", "lat": 47.3772081, "lon": 8.5227817, "category": "minimal", "is_us": false}, {"id": 102, "name": "Maggie Louise", "geo_name": "MAGGIE LOUISE", "email": "molly@maggielouisebridal.com", "note": "placed 5 styles + 1 carryover", "address": "1730 S GERMANTOWN ROAD<br>Suite 107<br>GERMANTOWN, TN<br>38138", "lat": 35.0867577, "lon": -89.8100858, "category": "minimal", "is_us": true}, {"id": 103, "name": "Bridal Atelier", "geo_name": "Bridal Atelier Boutique", "email": "bridalatelierhn@gmail.com", "note": "placed 5 styles", "address": "1732 Nw 82nd<br>Suite #5<br>Doral, FL<br>33126", "lat": 25.8195424, "lon": -80.3553302, "category": "minimal", "is_us": true}, {"id": 104, "name": "Autie Bridal", "geo_name": "Autie Bridal Studio", "email": "autiebridal@gmail.com", "note": "placed 4 styles on 2/26/26", "address": "Alto Eucalipto 105<br>San Pedro Garza Garcma<br>Monterrey<br>66278", "lat": 25.6802019, "lon": -100.315258, "category": "minimal", "is_us": false}, {"id": 105, "name": "I Do Bridal Couture (Baton Rouge)", "geo_name": "I Do Bridal Couture- BR", "email": "ramsey@idobridalcouture.com", "note": "placed 3 styles", "address": "4343 Perkins Rd<br>Baton Rouge, LA<br>70808", "lat": 30.4494155, "lon": -91.1869659, "category": "minimal", "is_us": true}, {"id": 106, "name": "Pearl Bridal- Australia", "geo_name": "Pearl Bridal- Australia", "email": "dom@pearlbridal.com.au", "note": "placed 3 styles + 2 carry overs", "address": "3/154 Varsity Parade, Varsity Lakes<br>Gold Coast<br>4227", "lat": -28.1051093, "lon": 153.4029431, "category": "minimal", "is_us": false}, {"id": 107, "name": "White Tulip Bridal Inc", "geo_name": "White Tulip Bridal Inc", "email": "maggieburbidge@live.ca", "note": "placed 4 styles", "address": "6070 Almon St<br>Halifax<br>B3K 1T8", "lat": 44.6488, "lon": -63.5752, "category": "minimal", "is_us": false}, {"id": 108, "name": "Lovely Bride- Miami", "geo_name": "Lovely Bride-Miami", "email": "ReAnne@lovelybride.com", "note": "placed 4 styles", "address": "175 NW 25th St<br>Miami, FL<br>33127", "lat": 25.7741566, "lon": -80.1935973, "category": "minimal", "is_us": true}, {"id": 109, "name": "Fancys Bridal", "geo_name": "Fancy's Bridal", "email": "fancysbridal@gmail.com", "note": "placed 6 styles", "address": "106 Sauls St<br>Lake City, SC<br>29560", "lat": 33.8709959, "lon": -79.7553452, "category": "minimal", "is_us": true}, {"id": 110, "name": "I Do Bridal Couture (Covington)", "geo_name": "I Do Bridal Couture- Covington", "email": "idocovington@idobridalcouture.com", "note": "placed 6 styles", "address": "316 Lee Ln<br>Covington, LA<br>70433", "lat": 30.4753525, "lon": -90.1010474, "category": "minimal", "is_us": true}, {"id": 111, "name": "Atelier Stilosophie Couture", "geo_name": "Atelier Stilosophie Couture", "email": "ariannaplacanica@gmail.com", "note": "placed 6 styles", "address": "Via Liugi Capuana 152<br>Rome<br>00137", "lat": 41.948204, "lon": 12.5608106, "category": "minimal", "is_us": false}, {"id": 112, "name": "Love and Lee Bridal Boutique", "geo_name": "Love and Lee Bridal Boutique", "email": "loveandleewed@gmail.com", "note": "LC FOLLOWED UP- placed 3 styles + 1 carryover", "address": "111 Pitt Street<br>Cornwall, ON<br>K6J 3P5, Canada", "lat": 45.0218, "lon": -74.728, "category": "minimal", "is_us": false}, {"id": 113, "name": "Moondance Bridal", "geo_name": "Moondance Bridal", "email": "hello@moondancebridal.com", "note": "placed 4 styles", "address": "1880 Santa Barbara Ave<br>#130<br>San Luis Obispo, CA<br>93401", "lat": 35.2827525, "lon": -120.659615, "category": "minimal", "is_us": true}, {"id": 114, "name": "Liv and Love Bridal", "geo_name": "Liv and Love Bridal", "email": "olivia@livandlovebridal.com", "note": "LC FOLLOWED UP- placed 4 styles", "address": "25035 W Interstate 10 Frontage Rd<br>#102<br>San Antonio, TX<br>78257", "lat": 29.4246002, "lon": -98.4951405, "category": "minimal", "is_us": true}, {"id": 115, "name": "Timeless Elegance Bridal", "geo_name": "Timeless Elegance Bridal", "email": "manager@timelesselegancebridal.co.uk", "note": "cherry pick offer", "address": "1st Floor, St John_x0012_s Chambers, High Street Arcade<br>Cardiff<br>CF10 1BD", "lat": 51.48109, "lon": -3.17896, "category": "minimal", "is_us": false}, {"id": 116, "name": "The Suite", "geo_name": "The Suite", "email": "tara@thesuite.ie", "note": "CT pushing back as she ordered 2 styles + 1 topper", "address": "183 Rathmines Road Lower 1st and 2nd Floor<br>Rathmines<br>Dublin<br>D06E3E5", "lat": 53.32295, "lon": -6.2658451, "category": "minimal", "is_us": false}, {"id": 117, "name": "Your Day by Nicole- Fargo", "geo_name": "Your Day by Nicole- Fargo", "email": "info@yourdaybynicole.com", "note": "placed half of order on 3/5/26 after reaching out", "address": "102 Broadway Suite 101<br>Fargo, ND<br>58102", "lat": 46.877229, "lon": -96.789821, "category": "partial", "is_us": true}, {"id": 118, "name": "Tul e Blanc", "geo_name": "Tul e Blanc", "email": "mariagarciah94@gmail.com", "note": "placed most of capsule minus 2 styles and cape", "address": "Gladiolas 129<br>Ciudad de Mexico, Mexico<br>05600", "lat": 19.391, "lon": -99.1663, "category": "partial", "is_us": false}, {"id": 119, "name": "Unveiled Little Rock", "geo_name": "Unveiled Little Rock", "email": "bmanning@unveiledlittlerock.com", "note": "placed full capsule minus Elisa", "address": "7811 Coutrell Road<br>Suite 2<br>Little Rock, AR<br>72227", "lat": 34.7223681, "lon": -92.3383026, "category": "partial", "is_us": true}, {"id": 120, "name": "A&Be Bridal Shop Sacramento", "geo_name": "A&Be Bridal Shop Sacramento", "email": "hellosac@aandbebridalshop.com", "note": "placed full capsule minus 3 styles", "address": "723 S Street Suite 100<br>Sacramento, CA<br>95811", "lat": 38.5810606, "lon": -121.493895, "category": "partial", "is_us": true}, {"id": 121, "name": "Bella Lilly Bridal", "geo_name": "Bella Lilly Bridal", "email": "Bella Lilly Bridal", "note": "placed full capsule minus Emma", "address": "19420 North 59th Avenue<br>Suite 249<br>Glendale, AZ<br>85308", "lat": 33.5386858, "lon": -112.185994, "category": "partial", "is_us": true}, {"id": 122, "name": "A&Be Bridal Shop- Denver", "geo_name": "A&Be Bridal Shop Denver", "email": "hellodenver@aandbebridalshop.com", "note": "placed full capsule minus 3 styles", "address": "1955 W 35th Avenue<br>Denver, CO<br>80211", "lat": 39.7392364, "lon": -104.984862, "category": "partial", "is_us": true}, {"id": 123, "name": "A&Be Bridal Shop- Portland", "geo_name": "A&Be Bridal Shop Portland", "email": "hellopdx@aandbebridalshop.com", "note": "placed full capsule minus 3 styles", "address": "2000 NE Alberta St<br>Portland, OR<br>97211", "lat": 45.5202471, "lon": -122.674194, "category": "partial", "is_us": true}, {"id": 124, "name": "Lena & Mae Bridal", "geo_name": "Lena & Mae Bridal", "email": "hello@lenamaebridal.com", "note": "placed capsule w/o accessories on 3/3/26", "address": "109 Maple St<br>Woodstock, NB<br>E7M 2H3, Canada", "lat": 46.1519, "lon": -67.5997, "category": "partial", "is_us": false}, {"id": 125, "name": "A&Be Bridal Shop- Minneapolis", "geo_name": "A&Be Bridal Shop Minneapolis", "email": "hellompls@aandbebridalshop.com", "note": null, "address": "1607 Hennepin Ave<br>Minneapolis, MN<br>55403", "lat": 44.9772995, "lon": -93.2654692, "category": "partial", "is_us": true}, {"id": 126, "name": "Wild Flora", "geo_name": "Wild Flora", "email": "hello@wild-flora.co.uk", "note": "placed full capsule w/o accessories + 1 carryover on 3/4/26", "address": "Unit 51 Vinehall Business Centre<br>Whatlington<br>TN32 5JW", "lat": 50.95521, "lon": 0.50104, "category": "partial", "is_us": false}, {"id": 127, "name": "Flair", "geo_name": "Flair", "email": "orders@flairboston.com", "note": "placed full capsule + 3 carryover styles *after* we made push to order Brooks on 2/26/26", "address": "140 Newbury Street Suite 202<br>Boston, MA<br>02116", "lat": 42.3588336, "lon": -71.0578303, "category": "partial", "is_us": true}, {"id": 128, "name": "Masako Formals", "geo_name": "Masako Formals", "email": "MasakoBridal@gmail.com", "note": "placed 9 styles", "address": "1038 Queen St<br>#1<br>Honolulu, HI<br>96814", "lat": 21.304547, "lon": -157.855676, "category": "partial", "is_us": true}, {"id": 129, "name": "The White Magnolia- Charleston", "geo_name": "The White Magnolia- Charleston", "email": "camille@whitemagnoliabridal.com", "note": "placed capsule minus 2 styles", "address": "Charleston, SC", "lat": 32.7765, "lon": -79.9311, "category": "partial", "is_us": true}, {"id": 130, "name": "a&be x anna be Dallas", "geo_name": "a&be x anna be Dallas", "email": "hellodallas@aandbebridalshop.com", "note": "placed capsule minus 2 styles", "address": "154 Glass St #110<br>Dallas, TX<br>75207", "lat": 32.7762719, "lon": -96.7968559, "category": "partial", "is_us": true}, {"id": 131, "name": "Misora Bridal Boutique", "geo_name": "Misora Bridal Boutique", "email": "MisoraOrders@gmail.com", "note": "placed 10 styles + 2 carryovers", "address": "7601 W Sam Houston Pkwy S<br>Suite 150<br>Houston, TX<br>77072", "lat": 29.7589382, "lon": -95.3676974, "category": "partial", "is_us": true}, {"id": 132, "name": "The White Magnolia- Savannah", "geo_name": "The White Magnolia- Savannah", "email": "Karsen@whitemagnoliabridal.com", "note": "place 6 styles + 2 carryovers", "address": "Savannah, GA", "lat": 32.0809, "lon": -81.0912, "category": "partial", "is_us": true}, {"id": 133, "name": "The White Magnolia- Jax", "geo_name": "The White Magnolia- Jax", "email": "jaxconfirmations@gmail.com", "note": "placed 8 styles + 1 carryover", "address": "1024 San Marco Blvd<br>Jacksonville, FL<br>32207", "lat": 30.3262247, "lon": -81.6579179, "category": "partial", "is_us": true}, {"id": 134, "name": "Emi Alice Bridal", "geo_name": "Emi Alice Bridal", "email": "hello@emialicebridal.co.uk", "note": "placed 9 styles", "address": "30-32 Elm Road<br>Leigh on the Sea<br>Essex<br>SS91SN", "lat": 51.5424752, "lon": 0.6546265, "category": "partial", "is_us": false}, {"id": 135, "name": "Abigail Bride LLC", "geo_name": "Abigail Bride AP, LLC", "email": "gail.abigailbride@gmail.com", "note": "placed 6 styles", "address": "600 Cookman Avenue<br>Unit 101<br>Asbury Park, NJ<br>07712", "lat": 40.2203907, "lon": -74.0120817, "category": "partial", "is_us": true}, {"id": 136, "name": "The White Magnolia- Palm Beach", "geo_name": "The White Magnolia- Palm Beach", "email": "palmbeachconfirmations@gmail.com", "note": "placed 6 styles + 2 carryovers", "address": "Palm Beach, FL", "lat": 26.7056, "lon": -80.0364, "category": "partial", "is_us": true}, {"id": 137, "name": "The Fleuridian", "geo_name": "The Fleuridian", "email": "sloane@thefleuridian.com", "note": "cherry pick offer- placed 8 styles", "address": "1234 NW 14th Avenue<br>Gainsville, FL<br>32601", "lat": 29.6194176, "lon": -82.3601179, "category": "partial", "is_us": true}, {"id": 138, "name": "The Perfect Dress", "geo_name": "The Perfect Dress", "email": "info@theperfectdress.com", "note": "cherry pick offer- placed 4 styles", "address": "2278 E Murray Holladay Rd<br>Holladay, UT<br>84117", "lat": 40.6710765, "lon": -111.8250278, "category": "partial", "is_us": true}, {"id": 139, "name": "The White Magnolia- Greenville", "geo_name": "The White Magnolia- Greenville", "email": "greenville@whitemagnoliabridal.com", "note": "placed 7 styles + 2 carryovers", "address": "Greenville, SC", "lat": 34.8526, "lon": -82.394, "category": "partial", "is_us": true}, {"id": 140, "name": "Unbridaled Boutique", "geo_name": "Unbridaled Boutique", "email": "hello@unbridaledboutique.co.uk", "note": "placed 9 styles", "address": "49 Kings Park<br>Ayr<br>KA89NZ", "lat": 55.4781022, "lon": -4.6096118, "category": "partial", "is_us": false}, {"id": 141, "name": "Astra Bridal", "geo_name": "Astra Bridal Holdings ltd", "email": "vicky@astrabridal.co.nz", "note": "Astra has 4 locations/ placed 21 new styles for 4 stores", "address": "Unit E, 3 Orbit Drive<br>Albany<br>0632", "lat": -36.7279344, "lon": 174.7086478, "category": "partial", "is_us": false}, {"id": 142, "name": "Lara Belle Bridal Boutique", "geo_name": "Lara Belle Bridal Boutique", "email": "faye@larabellebridal.com", "note": "places 9 styles", "address": "The Cleve<br>Mantle Street<br>Wellington, Somerset<br>TA21 8SN", "lat": 50.9754806, "lon": -3.2368488, "category": "partial", "is_us": false}, {"id": 143, "name": "Folkster", "geo_name": "Folkster Bridal- Kilkenny", "email": "bridalmanager@folkster.com", "note": "placed 7 styles + 1 carryover", "address": "27 Patrick St.<br>Kilkenny<br>R95 ARR8", "lat": 52.6506255, "lon": -7.2514438, "category": "partial", "is_us": false}, {"id": 144, "name": "The Bride Lab", "geo_name": "The Bride Lab", "email": "laura@thebridelab.com.au", "note": "placed 4 styles + 3 carryovers", "address": "23 Croydon Road<br>Keswick<br>5035", "lat": -34.9443902, "lon": 138.5777753, "category": "partial", "is_us": false}, {"id": 145, "name": "Bridal Salon of Huntington", "geo_name": "Bridal Salon of Huntington", "email": "info@bridalsalonhuntington.com", "note": "placed 7 styles", "address": "271 Main Street<br>Huntington, NY<br>11743", "lat": 40.868154, "lon": -73.425676, "category": "partial", "is_us": true}, {"id": 146, "name": "A&Be Bridal Shop- Nashville", "geo_name": "A&Be Bridal Shop Nashville", "email": "hellonash@aandbebridalshop.com", "note": "placed 9 styles", "address": "6106 Robertson Ave<br>Nashville, TN<br>37209", "lat": 36.1622767, "lon": -86.7742984, "category": "partial", "is_us": true}, {"id": 147, "name": "A&Be Bridal Shop- Raleigh", "geo_name": "A&Be Bridal Shop Raleigh", "email": "helloraleigh@aandbebridalshop.com", "note": "placed 9 styles", "address": "210 E Chatham St<br>#300<br>Cary, NC<br>27511", "lat": 35.7882893, "lon": -78.7812081, "category": "partial", "is_us": true}, {"id": 148, "name": "Pippa Bridal", "geo_name": "Pippa Bridal", "email": "hello@pippabridal.com", "note": "placing in BCN- placed 7 new styles+ 3 carry overs", "address": "2 Somerset Crescent<br>Coleraine<br>BT51 3LG", "lat": 55.1315912, "lon": -6.671861, "category": "partial", "is_us": false}, {"id": 149, "name": "Belle Lueur Bridal", "geo_name": "Belle Lueur Bridal", "email": "HELLO@BELLELUEURBRIDAL.COM", "note": "placed 8 styles", "address": "COUNTY SQUARE STUDIOS/COUNTY SQUARE<br>FIRST FLOOR<br>ULVERSTON<br>LA12 7AL", "lat": 54.1943712, "lon": -3.0949574, "category": "partial", "is_us": false}, {"id": 150, "name": "Brautfreundin", "geo_name": "Brautfreundin", "email": "info@brautfreundin.de", "note": "reviewing- placed 3 new styles", "address": "Kaiserstr.68<br>Monchengladbach<br>41061", "lat": 51.1943408, "lon": 6.433353, "category": "partial", "is_us": false}];
+var unmatchedData = [{"name": "Atelier ML", "email": "lolonovas1@mac.com", "note": "added 2 FW26 styles as this was opening stock", "fill": "FFD9EAD3", "row": 2}, {"name": "Velum Bridal", "email": "info@velumbridal.com", "note": "placed 11 styles", "fill": "FFD9EAD3", "row": 57}, {"name": "Flares Bridal & Formal", "email": "flaresbridal@gmail.com", "note": "places 1 new style and 9 carry overs", "fill": "FFEA9999", "row": 118}, {"name": "Leon Bridal Studio", "email": "leonbridalstudio@gmail.com", "note": "new store- 4 styles", "fill": "FFFFF2CC", "row": 149}, {"name": "Brides of the Pines", "email": "hello@brideofthepines.com", "note": "new store- placed 2 new styles + 6 carry overs", "fill": "FFFFF2CC", "row": 150}, {"name": "A&Be Bridal Shop- Seattle", "email": "helloseattle@aandbebridalshop.com", "note": "placed 9 styles", "fill": "FFFFF2CC", "row": 155}, {"name": "Lace and Dolly", "email": "laceanddolly.mk@gmail.com", "note": "new store- placed 8 styles", "fill": "FFFFF2CC", "row": 158}, {"name": "The Wov Bridal Space", "email": "cecilia.reyes.valdes@gmail.com", "note": "new store- placed 7 styles", "fill": "FFFFF2CC", "row": 159}, {"name": "Elizabeth Cole", "email": "betsy@elizabethcolebridal.com", "note": "new store- placed 3 styles", "fill": "FFFFF2CC", "row": 160}, {"name": "Silk and Maple", "email": "silkandmaplebridal@gmail.com", "note": "placed 3 new styles", "fill": "FFFFF2CC", "row": 164}];
+var COLOR = {"full": {"fill": "#D9EAD3", "marker": "#2E7D32", "label": "Full capsule"}, "partial": {"fill": "#FFF2CC", "marker": "#F9A825", "label": "Partial / minus styles"}, "minimal": {"fill": "#EA9999", "marker": "#C62828", "label": "Passing / minimal / cherry-pick"}};
+
+var mapObj = null;
+var markerLayers = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    for (var key in window) {
+        try {
+            if (window[key] && typeof window[key].getCenter === 'function') {
+                mapObj = window[key];
+                break;
+            }
+        } catch(e) {}
+    }
+    if (mapObj) {
+        renderStores();
+        renderUnmatched();
+    }
+});
+
+function categorize(fill) {
+    if (fill === 'FFD9EAD3') return 'full';
+    if (fill === 'FFFFF2CC') return 'partial';
+    if (fill === 'FFEA9999') return 'minimal';
+    return 'unknown';
+}
+
+function buildTooltip(store) {
+    var col = COLOR[store.category];
+    var emailLine = store.email ? '<div style="color:#777;font-size:10px;margin-top:2px">' + store.email + '</div>' : '';
+    var noteLine = store.note ? '<div style="background:' + col.fill + ';padding:6px 8px;border-radius:4px;margin-top:6px;font-size:11px;color:#333">' + store.note + '</div>' : '';
+    return '<div style="font-family:Arial,sans-serif;min-width:200px;max-width:280px">' +
+        '<b style="font-size:13px">' + store.name + '</b><br>' +
+        '<span style="color:#555;font-size:11px">' + store.address + '</span>' +
+        emailLine + noteLine + '</div>';
+}
+
+function renderStores() {
+    markerLayers.forEach(function(l) { mapObj.removeLayer(l); });
+    markerLayers = [];
+
+    var filters = {
+        'full': document.getElementById('cb-full').checked,
+        'partial': document.getElementById('cb-partial').checked,
+        'minimal': document.getElementById('cb-minimal').checked,
+    };
+
+    var visibleCount = 0;
+    storeData.forEach(function(store) {
+        if (!filters[store.category]) return;
+        visibleCount++;
+        var col = COLOR[store.category];
+        var marker = L.circleMarker([store.lat, store.lon], {
+            radius: 7,
+            color: 'white',
+            weight: 1.5,
+            fillColor: col.marker,
+            fillOpacity: 0.92,
+            fill: true
+        }).addTo(mapObj);
+        marker.bindTooltip(buildTooltip(store));
+        markerLayers.push(marker);
+    });
+
+    document.getElementById('visible-count').textContent = visibleCount;
+}
+
+function applyFilters() { renderStores(); }
+
+function renderUnmatched() {
+    var html = '';
+    unmatchedData.forEach(function(u) {
+        var fill = u.fill;
+        var cat = categorize(fill);
+        var col = COLOR[cat] || { fill: '#eee' };
+        html += '<div class="um-row" style="border-left:3px solid ' + (col.marker || '#999') + '">';
+        html += '<div class="um-name">' + u.name + '</div>';
+        if (u.note) html += '<div class="um-note">' + u.note + '</div>';
+        html += '</div>';
+    });
+    document.getElementById('um-list').innerHTML = html;
+}
+
+function toggleUnmatched() {
+    var p = document.getElementById('unmatched-panel');
+    var btn = document.getElementById('toggle-um');
+    if (p.style.display === 'none') {
+        p.style.display = 'block';
+        btn.textContent = 'Hide ' + unmatchedData.length + ' new/unmapped accounts';
+    } else {
+        p.style.display = 'none';
+        btn.textContent = 'Show ' + unmatchedData.length + ' new/unmapped accounts';
+    }
+}
+
+var REGIONS = {
+    'world': { center: [20, 0],   zoom: 2 },
+    'us':    { center: [39.5, -98.5], zoom: 4 },
+    'eu':    { center: [50, 10],  zoom: 4 },
+    'au':    { center: [-30, 145], zoom: 4 },
+};
+
+function zoomTo(region) {
+    var r = REGIONS[region];
+    mapObj.setView(r.center, r.zoom);
+    document.querySelectorAll('#region-toggle button').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById('btn-' + region).classList.add('active');
+}
+</script>
+    
+            <div class="folium-map" id="map_fad8bcaea322edeaed5d2ffc36a254bf" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_fad8bcaea322edeaed5d2ffc36a254bf = L.map(
+                "map_fad8bcaea322edeaed5d2ffc36a254bf",
+                {
+                    center: [20.0, 0.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 2,
+  "zoomControl": true,
+  "preferCanvas": false,
+  "worldCopyJump": true,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_f3a75114eb82c66fd17141ea6a3e8407 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_f3a75114eb82c66fd17141ea6a3e8407.addTo(map_fad8bcaea322edeaed5d2ffc36a254bf);
+        
+</script>
+</html>
